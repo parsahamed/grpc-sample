@@ -1,8 +1,7 @@
-import 'reflect-metadata';
-import { join } from 'node:path';
 import { NestFactory } from '@nestjs/core';
 import { Transport } from '@nestjs/microservices';
 import { AppModule } from './app.module';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice(AppModule, {
@@ -15,10 +14,6 @@ async function bootstrap() {
   });
 
   await app.listen();
-  console.log('NestJS gRPC server is running on 0.0.0.0:50051');
 }
 
-bootstrap().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+bootstrap();

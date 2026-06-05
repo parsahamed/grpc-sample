@@ -1,95 +1,34 @@
-# gRPC-Web sample with NestJS and React
+# gRPC Sample Project
 
-This repository demonstrates a practical browser-to-backend gRPC setup:
+This repository demonstrates a simple gRPC service using NestJS on the backend and a React client configured to be extended with gRPC‑Web. An Envoy proxy is provided to translate gRPC‑Web requests from the browser into standard gRPC calls to the NestJS server.
 
-```text
-React browser client
-  -> gRPC-Web request
-Envoy proxy
-  -> native gRPC over HTTP/2
-NestJS gRPC server
-```
+## Structure
 
-A browser cannot call a normal gRPC server directly, so Envoy translates gRPC-Web requests from the React app into native gRPC requests for NestJS.
+- `proto/user.proto`: The Protocol Buffers definition for the `UserService`.
+- `server`: A NestJS microservice that exposes the `GetUser` RPC method via gRPC.
+- `client`: A React application set up with Vite. The current `App.tsx` is a placeholder for future gRPC‑Web integration.
+- `envoy/envoy.yaml`: Configuration for Envoy to accept gRPC-Web requests on port 8080 and forward them to the gRPC server.
+- `docker-compose.yml`: A Docker Compose configuration to run the server, envoy proxy, and client services together.
 
-> Note: the repository name is `gprc-sample`, but the technology is `gRPC`.
+## Getting Started
 
-## Project structure
+1. Install dependencies for both server and client:
 
-```text
-.
-├── client/          # React + Vite + grpc-web client
-├── server/          # NestJS gRPC server
-├── proto/           # Shared protobuf contract
-├── envoy/           # Envoy gRPC-Web proxy config
-└── docker-compose.yml
-```
+   ```bash
+   cd server
+   npm install
+   cd ../client
+   npm install
+   ```
 
-## Run locally
+2. Build and run the services using Docker Compose:
 
-Install dependencies:
+   ```bash
+   docker compose up --build
+   ```
 
-```bash
-cd server
-npm install
+   This will start the NestJS gRPC service on port 50051, the Envoy proxy on port 8080, and the React client on port 3000.
 
-cd ../client
-npm install
-```
+3. Open the client in your browser at `http://localhost:3000`.
 
-Generate the React gRPC-Web client files:
-
-```bash
-cd client
-npm run proto:gen
-```
-
-Run NestJS server:
-
-```bash
-cd server
-npm run start:dev
-```
-
-Run Envoy:
-
-```bash
-docker compose up envoy
-```
-
-Run React:
-
-```bash
-cd client
-npm run dev
-```
-
-Open:
-
-```text
-http://localhost:5173
-```
-
-In Chrome DevTools you should see a request like:
-
-```text
-POST http://localhost:8080/user.UserService/GetUser
-content-type: application/grpc-web+proto
-```
-
-The browser talks to Envoy, not directly to the NestJS gRPC server.
-
-## Deployment notes
-
-Vercel can host the React client.
-
-The NestJS gRPC server and Envoy proxy should be deployed somewhere that supports long-running services and custom ports, such as Railway, Render, Fly.io, a VPS, or Kubernetes.
-
-Typical production architecture:
-
-```text
-Vercel React app
-  -> public Envoy endpoint
-Envoy
-  -> private NestJS gRPC service
-```
+Future phases will include generating gRPC-Web client code from the proto file and integrating it into the React application.
